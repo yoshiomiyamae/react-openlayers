@@ -13,7 +13,7 @@ If you have no problem with the original package, please use that.
 
 ## Install
 
-    yarn add react-openlayers
+    yarn add https://github.com/yoshiomiyamae/react-openlayers.git
 
 ## Usage
 
