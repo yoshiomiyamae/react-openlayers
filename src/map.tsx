@@ -3,6 +3,7 @@ import * as ol from 'openlayers';
 import {Util} from './util';
 import {Layers} from './layers/layers';
 import {layer} from './layers/index';
+import * as PropTypes from 'prop-types';
 
 import './ol.css';
 import './map.css';
@@ -38,8 +39,6 @@ export class Map extends React.Component<any, any> {
     loadTilesWhileInteractiong: undefined,
     logo: undefined,
     renderer: undefined,
-    //new options  for map component : setZoom, SetCenter, setResolution
-    /* Added by : Harinder Randhawa */
     setCenter: undefined,
     setZoom: undefined,
     setResolution: undefined,
@@ -68,6 +67,12 @@ export class Map extends React.Component<any, any> {
     'singleclick': undefined
   };
 
+  // Ref. https://facebook.github.io/react/docs/context.html#how-to-use-context
+  static childContextTypes = {
+   mapComp: PropTypes.instanceOf(Map),
+   map: PropTypes.instanceOf(ol.Map)
+  };
+
   /**
    * Component mounting LifeCycle; constructor, componentDidMount, and render
    * https://facebook.github.io/react/docs/react-component.html#mounting
@@ -78,7 +83,8 @@ export class Map extends React.Component<any, any> {
   }
 
   componentDidMount() {
-    let options = Util.getOptions(Object.assign(this.options, this.props));
+    this.options = {...this.options, ...this.props};
+    let options = Util.getOptions(this.options);
     !(options.view instanceof ol.View) && (options.view = new ol.View(options.view));
 
     let controlsCmp = Util.findChild(this.props.children, 'Controls') || {};
@@ -109,7 +115,8 @@ export class Map extends React.Component<any, any> {
     if(this.props.view && nextProps.view.zoom !== this.props.view.zoom){
       this.map.getView().setZoom(nextProps.view.zoom);
     }
- }
+  }
+
   render() {
     return (
       <div>
@@ -146,9 +153,3 @@ export class Map extends React.Component<any, any> {
   }
 
 }
-
-// Ref. https://facebook.github.io/react/docs/context.html#how-to-use-context
-Map['childContextTypes'] = {
-  mapComp: React.PropTypes.instanceOf(Map),
-  map: React.PropTypes.instanceOf(ol.Map)
-};

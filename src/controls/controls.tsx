@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as ol from 'openlayers';
+import * as PropTypes from 'prop-types';
 
 import {Util} from '../util';
 
@@ -15,6 +16,10 @@ export class Controls extends React.Component<any, any> {
     zoomOptions: undefined
   };
 
+  static contextTypes = {
+    map: PropTypes.instanceOf(ol.Map)
+  };
+
   constructor(props) {
     super(props);
     this.options = Util.getOptions(Object['assign'](this.options, this.props));
@@ -24,11 +29,7 @@ export class Controls extends React.Component<any, any> {
     return (<div>{this.props.children}</div>);
   }
 
-  componentDidMount () {} 
+  componentDidMount () {}
 
   componentWillUnmount () {}
 }
-
-Controls['contextTypes'] = {
-  map: React.PropTypes.instanceOf(ol.Map)
-};

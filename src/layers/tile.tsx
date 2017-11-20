@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as ol from 'openlayers';
 import {Util} from '../util';
 import {Map} from '../map';
+import * as PropTypes from 'prop-types';
 
 export class Tile extends React.Component<any, any> {
 
@@ -36,6 +37,11 @@ export class Tile extends React.Component<any, any> {
     'render': undefined
   };
 
+  static contextTypes = {
+    mapComp: PropTypes.instanceOf(Object),
+    map: PropTypes.instanceOf(ol.Map)
+  };
+
   constructor(props) {
     super(props);
     console.log('Tile constructor');
@@ -46,7 +52,8 @@ export class Tile extends React.Component<any, any> {
   }
 
   componentDidMount () {
-    let options = Util.getOptions(Object.assign(this.options, this.props));
+    this.options = {...this.options, ...this.props};
+    let options = Util.getOptions(this.options);
     options.source = options.source || new ol.source.OSM();
     this.layer = new ol.layer.Tile(options);
     if(this.props.zIndex){
@@ -62,7 +69,8 @@ export class Tile extends React.Component<any, any> {
 
   componentWillReceiveProps (nextProps) {
     if(nextProps !== this.props){
-      let options = Util.getOptions(Object.assign(this.options, this.props));
+      this.options = {...this.options, ...this.props};
+    let options = Util.getOptions(this.options);
       this.context.mapComp.map.removeLayer(this.layer);
       this.layer = new ol.layer.Tile(options);
       if(this.props.zIndex){
@@ -76,14 +84,9 @@ export class Tile extends React.Component<any, any> {
       }
     }
   }
-  
+
   componentWillUnmount () {
     this.context.mapComp.map.removeLayer(this.layer);
   }
 
 }
-
-Tile['contextTypes'] = {
-  mapComp: React.PropTypes.instanceOf(Map),
-  map: React.PropTypes.instanceOf(ol.Map)
-};

@@ -13,7 +13,7 @@ let layer = {
   VectorTile: VectorTile,
 };
 
-export { 
+export {
   Layers,
   layer,
   Heatmap,

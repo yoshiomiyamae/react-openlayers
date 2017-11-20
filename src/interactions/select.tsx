@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as ol from 'openlayers';
 import {Util} from "../util";
 import {Map} from '../map';
+import * as PropTypes from 'prop-types';
 
 export class Select extends React.Component<any, any> {
 
@@ -28,6 +29,11 @@ export class Select extends React.Component<any, any> {
     'select': undefined
   };
 
+  static contextTypes = {
+    mapComp: PropTypes.instanceOf(Object),
+    map: PropTypes.instanceOf(ol.Map)
+  };
+
   constructor(props) { super(props); }
 
   render() { return null; }
@@ -36,11 +42,12 @@ export class Select extends React.Component<any, any> {
     if (this.props.instance) {
       this.interaction = this.props.instance;
     } else {
-      let options = Util.getOptions(Object['assign'](this.options, this.props));
+      this.options = {...this.options, ...this.props};
+    let options = Util.getOptions(this.options);
       this.interaction = new ol.interaction.Select(options);
     }
     this.context.mapComp.interactions.push(this.interaction)
-    
+
     let olEvents = Util.getEvents(this.events, this.props);
     for(let eventName in olEvents) {
       this.interaction.on(eventName, olEvents[eventName]);
@@ -65,14 +72,9 @@ export class Select extends React.Component<any, any> {
       }
     }
   }
-  
+
   componentWillUnmount () {
     this.context.mapComp.map.removeInteraction(this.interaction);
   }
 
 }
-
-Select['contextTypes'] = {
-  mapComp: React.PropTypes.instanceOf(Map),
-  map: React.PropTypes.instanceOf(ol.Map)
-};

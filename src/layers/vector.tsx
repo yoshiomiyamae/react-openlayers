@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as ol from 'openlayers';
 import {Util} from "../util";
 import {Map} from '../map';
+import * as PropTypes from 'prop-types';
 
 export class Vector extends React.Component<any, any> {
 
@@ -37,6 +38,11 @@ export class Vector extends React.Component<any, any> {
     'render': undefined
   };
 
+  static contextTypes = {
+    mapComp: PropTypes.instanceOf(Object),
+    map: PropTypes.instanceOf(ol.Map)
+  };
+
   constructor(props) {
     super(props);
   }
@@ -46,11 +52,12 @@ export class Vector extends React.Component<any, any> {
   }
 
   componentDidMount () {
-    let options = Util.getOptions(Object.assign(this.options, this.props));
+    this.options = {...this.options, ...this.props};
+    let options = Util.getOptions(this.options);
     this.layer = new ol.layer.Vector(options);
     if(this.props.zIndex){
       this.layer.setZIndex(this.props.zIndex);
-    }  
+    }
     this.context.mapComp.layers.push(this.layer);
 
     let olEvents = Util.getEvents(this.events, this.props);
@@ -61,7 +68,8 @@ export class Vector extends React.Component<any, any> {
 
   componentWillReceiveProps (nextProps) {
     if(nextProps !== this.props){
-      let options = Util.getOptions(Object.assign(this.options, this.props));
+      this.options = {...this.options, ...this.props};
+    let options = Util.getOptions(this.options);
       this.context.mapComp.map.removeLayer(this.layer);
       this.layer = new ol.layer.Vector(options);
       if(this.props.zIndex){
@@ -75,14 +83,9 @@ export class Vector extends React.Component<any, any> {
       }
     }
   }
-  
+
   componentWillUnmount () {
     this.context.mapComp.map.removeLayer(this.layer);
   }
 
 }
-
-Vector['contextTypes'] = {
-  mapComp: React.PropTypes.instanceOf(Map),
-  map: React.PropTypes.instanceOf(ol.Map)
-};

@@ -21,7 +21,7 @@ let control = {
   Zoom: Zoom
 };
 
-export { 
+export {
   Controls,
   control
 };

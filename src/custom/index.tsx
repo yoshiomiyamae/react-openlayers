@@ -19,4 +19,3 @@ let custom = {
 };
 
 export {custom};
-

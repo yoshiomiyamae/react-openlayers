@@ -3,9 +3,9 @@ import * as ReactDOM from 'react-dom';
 import * as ol from 'openlayers';
 import {Util} from './util';
 import {Map} from './Map';
+import * as PropTypes from 'prop-types';
 
 export class Overlay extends React.Component<any, any> {
-
   overlay: ol.Overlay;
   el: HTMLElement;
 
@@ -31,6 +31,11 @@ export class Overlay extends React.Component<any, any> {
     'propertychange': undefined
   };
 
+  static contextTypes = {
+    mapComp: PropTypes.instanceOf(Object),
+    map: PropTypes.instanceOf(ol.Map)
+  };
+
   render() {
     return (
       <div>
@@ -40,15 +45,11 @@ export class Overlay extends React.Component<any, any> {
   }
 
   componentDidMount () {
-    let options = Util.getOptions( Object['assign'](this.options, this.props));
+    this.options = {...this.options, ...this.props};
+    let options = Util.getOptions(this.options);
     options.element = ReactDOM.findDOMNode(this).querySelector('div');
     // console.log('options.element', options.element);
     this.overlay = new ol.Overlay(options);
     this.context.mapComp.overlays.push(this.overlay);
   }
 }
-
-Overlay['contextTypes'] = {
-  mapComp: React.PropTypes.instanceOf(Object),
-  map: React.PropTypes.instanceOf(ol.Map)
-};

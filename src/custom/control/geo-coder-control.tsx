@@ -70,4 +70,3 @@ export class GeoCoderControl extends ol.control.Control {
     return autocompleteEl;
   }
 }
-

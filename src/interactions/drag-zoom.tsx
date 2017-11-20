@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as ol from 'openlayers';
 import {Util} from "../util";
 import {Map} from '../map';
+import * as PropTypes from 'prop-types';
 
 export class DragZoom extends React.Component<any, any> {
 
@@ -23,16 +24,22 @@ export class DragZoom extends React.Component<any, any> {
     'propertychange': undefined
   };
 
+  static contextTypes = {
+    mapComp: PropTypes.instanceOf(Object),
+    map: PropTypes.instanceOf(ol.Map)
+  };
+
   constructor(props) { super(props); }
 
   render() { return null; }
 
   componentDidMount () {
-    let options = Util.getOptions(Object['assign'](this.options, this.props));
+    this.options = {...this.options, ...this.props};
+    let options = Util.getOptions(this.options);
     console.log('options', options);
     this.interaction = new ol.interaction.DragZoom(options);
     this.context.mapComp.interactions.push(this.interaction)
-    
+
     let olEvents = Util.getEvents(this.events, this.props);
     for(let eventName in olEvents) {
       this.interaction.on(eventName, olEvents[eventName]);
@@ -52,14 +59,9 @@ export class DragZoom extends React.Component<any, any> {
       }
     }
   }
-  
+
   componentWillUnmount () {
     this.context.mapComp.map.removeInteraction(this.interaction);
   }
 
 }
-
-DragZoom['contextTypes'] = {
-  mapComp: React.PropTypes.instanceOf(Map),
-  map: React.PropTypes.instanceOf(ol.Map)
-};
